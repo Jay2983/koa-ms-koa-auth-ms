@@ -1,6 +1,5 @@
-'use strict';
-
 const generateId = require('../../utils/generateId.util');
+const query = require('../../db/queries/users.js');
 
 /**
  * Mock database, replace this with your db models import, required to perform query to your database.
@@ -34,8 +33,16 @@ exports.getOne = ctx => {
 };
 
 exports.getAll = async ctx => {
-  ctx.status = 200;
-  ctx.body = db.users;
+  try {
+    const users = await query.getAllUsers();
+    ctx.status = 200;
+    ctx.body = {
+      status: 'success',
+      data: users,
+    };
+  } catch (err) {
+    ctx.throw(400, err);
+  }
 };
 
 exports.createOne = async ctx => {
