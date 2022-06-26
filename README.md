@@ -25,3 +25,11 @@ If they are incorrect, the end user is redirected to /auth/login
 
 
 
+**What is Koa?**
+Koa is a web framework for Node.js.
+
+Although it’s designed by the same team that created Express, it’s much lighter than Express though - so it comes with very little out of the box. It’s really just a tiny wrapper on top of Node’s HTTP module. Koa allows you - the developer - to pick and choose the tools you want to use from the community.
+
+It has native support for async/await, which makes it easier and faster to develop an API since you don’t have to deal with callbacks and callback hell.
+
+Finally, since Koa has similar patterns to Express, it’s relatively easy to pick up if you’ve worked at all with Express.

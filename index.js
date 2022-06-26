@@ -1,27 +1,41 @@
-'use strict';
+const Koa = require('koa');
+const bodyParser = require('koa-bodyparser')();
+const compress = require('koa-compress')();
+const cors = require('@koa/cors')(/* Add your cors option */);
+const helmet = require('koa-helmet')(/* Add your security option */);
+const logger = require('koa-logger')();
 
-const http = require('http');
-const server = require('./server');
-
+const errorHandler = require('./middleware/error.middleware');
+const applyApiMiddleware = require('./api');
+const { isDevelopment } = require('./config');
 const { port } = require('./config').server;
 
-async function bootstrap() {
-  /**
-   * Add external services init as async operations (db, redis, etc...)
-   * e.g.
-   * await sequelize.authenticate()
-   */
-  return http.createServer(server.callback()).listen(port);
+const app = new Koa();
+
+/**
+ * Add here only development middlewares
+ */
+if (isDevelopment) {
+  app.use(logger);
 }
 
-bootstrap()
-  .then(server =>
-    console.log(`🚀 Server listening on port ${server.address().port}!`),
-  )
-  .catch(err => {
-    setImmediate(() => {
-      console.error('Unable to run the server because of the following error:');
-      console.error(err);
-      process.exit();
-    });
-  });
+/**
+ * Pass to our server instance middlewares
+ */
+app
+  .use(errorHandler)
+  .use(helmet)
+  .use(compress)
+  .use(cors)
+  .use(bodyParser);
+
+/**
+ * Apply to our server the api router
+ */
+applyApiMiddleware(app);
+
+const server = app.listen(port, () => {
+  console.log(`Server listening on port: ${port}`);
+});
+
+module.exports = server;
