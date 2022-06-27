@@ -3,7 +3,7 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-const server = require('../index');
+const server = require('../../index');
 
 describe('routes : auth', () => {
   describe('GET /users', () => {
