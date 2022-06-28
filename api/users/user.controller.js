@@ -24,12 +24,15 @@ const db = {
   ],
 };
 
-exports.getOne = ctx => {
+exports.getOne = async ctx => {
   const { userId } = ctx.params;
-  const user = db.users.find(user => user.id === userId);
+  const user = await query.getOneUser(userId);
   ctx.assert(user, 404, "The requested user doesn't exist");
   ctx.status = 200;
-  ctx.body = user;
+  ctx.body = {
+    status: 'success',
+    data: user,
+  };
 };
 
 exports.getAll = async ctx => {
@@ -46,16 +49,18 @@ exports.getAll = async ctx => {
 };
 
 exports.createOne = async ctx => {
-  const { name } = ctx.request.body;
-  ctx.assert(name, 400, 'The user info is malformed!');
-  const id = generateId();
-  const newUser = {
-    id,
-    name,
-    timestamp: Date.now(),
-  };
-  db.users.push(newUser);
-  const createdUser = db.users.find(user => user.id === id);
-  ctx.status = 201;
-  ctx.body = createdUser;
+  try {
+    const savedUser = await query.createOne(ctx.request.body);
+    if (!savedUser) {
+      ctx.throw(400, 'User could not be created');
+    } else {
+      ctx.status = 201;
+      ctx.body = {
+        status: 'success',
+        data: savedUser,
+      };
+    }
+  } catch (err) {
+    ctx.throw(400, err);
+  }
 };
