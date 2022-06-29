@@ -22,10 +22,17 @@ function getFirstUserId() {
     .select('id')
     .first();
 }
+function updateOne(userId, user) {
+  return knex('users')
+    .where('id', userId)
+    .update(user)
+    .returning('*');
+}
 
 module.exports = {
   getAllUsers,
   getOneUser,
   createOne,
   getFirstUserId,
+  updateOne,
 };

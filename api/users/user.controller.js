@@ -40,3 +40,21 @@ exports.createOne = async ctx => {
     ctx.throw(400, err);
   }
 };
+
+exports.updateOne = async ctx => {
+  try {
+    const { userId } = ctx.params;
+    const updatedUser = await query.updateOne(userId, ctx.request.body);
+    if (!updatedUser) {
+      ctx.throw(400, 'User could not be updated');
+    } else {
+      ctx.status = 200;
+      ctx.body = {
+        status: 'success',
+        data: updatedUser,
+      };
+    }
+  } catch (err) {
+    ctx.throw(400, err);
+  }
+};
