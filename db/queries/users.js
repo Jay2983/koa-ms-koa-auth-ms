@@ -16,8 +16,16 @@ function createOne(user) {
     .returning('*');
 }
 
+// user for integration tests
+function getFirstUserId() {
+  return knex('users')
+    .select('id')
+    .first();
+}
+
 module.exports = {
   getAllUsers,
   getOneUser,
   createOne,
+  getFirstUserId,
 };

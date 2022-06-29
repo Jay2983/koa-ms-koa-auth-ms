@@ -9,7 +9,7 @@
     "format": "prettier --write \"**/*.+(js|yml|yaml|json)\"",
     "lint": "eslint .",
     "start": "node index.js",
-    "test": "mocha ./test/**/*.test.js",
+    "test": "NODE_ENV=test mocha ./test/**/*.test.js",
     "unittest": "mocha ./test/unittests/*.test.js"
   },
   "devDependencies": {
