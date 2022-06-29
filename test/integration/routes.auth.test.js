@@ -112,4 +112,40 @@ describe('routes : auth', () => {
         });
     }).timeout(5000);
   });
+
+  describe('PUT /users/:userId', () => {
+    it('should update user and return json', async () => {
+      const { id } = await query.getFirstUserId();
+      chai
+        .request(server)
+        .put(`/api/v1/users/${id}`)
+        .send({
+          name: 'mocha test',
+          email: 'mocha@email.com',
+          password: cryptutil.hashPassword('mocha'),
+          position: 'tester',
+        })
+        .end((err, res) => {
+          should.not.exist(err);
+          res.status.should.eql(200);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('success');
+          res.body.data[0].should.include.keys(
+            'id',
+            'name',
+            'email',
+            'password',
+            'position',
+            'is_admin',
+            'created_at',
+            'updated_at',
+          );
+          res.body.data[0].name.should.eql('mocha test');
+          res.body.data[0].email.should.eql('mocha@email.com');
+          cryptutil
+            .comparePassword('mocha', res.body.data[0].password)
+            .should.eql(true);
+        });
+    });
+  });
 });
