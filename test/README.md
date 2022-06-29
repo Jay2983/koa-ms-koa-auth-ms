@@ -17,3 +17,6 @@ npm install mocha chai chai-http --save-dev
 npm install pg knex --save
 knex migrate:latest --env development
 knex seed:run --env development
+
+**Pre-Req**
+CREATE DATABASE koa_api_auth_test;
