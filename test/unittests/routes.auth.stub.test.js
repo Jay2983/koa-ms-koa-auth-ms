@@ -137,4 +137,38 @@ describe('routes : auth - stubbed', () => {
         });
     });
   });
+
+  describe('PUT /users/:userId', () => {
+    beforeEach(() => {
+      sinon.stub(queries, 'updateOne').resolves(data[0]);
+    });
+
+    afterEach(() => {
+      queries.updateOne.restore();
+    });
+
+    it('should return json with updated user', done => {
+      chai
+        .request(server)
+        .put('/api/v1/users/3')
+        .send(data[0])
+        .end((err, res) => {
+          should.not.exist(err);
+          res.status.should.eql(200);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('success');
+          res.body.data.should.include.keys(
+            'id',
+            'name',
+            'email',
+            'password',
+            'position',
+            'is_admin',
+            'created_at',
+            'updated_at',
+          );
+          done();
+        });
+    }).timeout(5000);
+  });
 });
