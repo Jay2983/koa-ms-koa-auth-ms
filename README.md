@@ -1,4 +1,4 @@
-![GitHub CI](https://github.com/dwyl/auth_plug/actions/workflows/ci.yml/badge.svg)
+![GitHub CI](https://github.com/Jay2983/koa-ms-koa-auth-ms/actions/workflows/node.js.yml/badge.svg)
 
 **This repo has been created using the create koa application.**
 
