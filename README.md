@@ -20,10 +20,16 @@ URL	                HTTP Verb	    Authenticated?	    Result
 /auth/logout	       GET	            Yes	                Log a user out
 
 **Full Authentication flow:**
-The end user provides a username and a password and the credentials are sent to the server-side
-The server-side Koa app then checks the credentials against the database
-If they are correct, the end user is redirected to /auth/status
-If they are incorrect, the end user is redirected to /auth/login
+First flow:
+User submits auth credentials (username and password), which are then sent to the server via a POST request to /auth/login.
+passport.authenticate() is called and the credentials are checked against the user info stored in the database.
+If the credentials are correct, passport.serializeUser() is fired and the user id is serialized to the Redis session store via the ctx.login() method.
+Finally, a cookie is generated, which is sent back with the response to the client and that cookie is then set.
+
+Second flow:
+An authenticated user hits a route requiring a user to be authenticated (like /auth/status).
+isAuthenticated() is called, which then verifies that (a) a user is in session and (b) that user is found within the database (via passport.deserializeUser()).
+If correct, the end user is allowed to view the route and the appropriate response is sent.
 
 
 
