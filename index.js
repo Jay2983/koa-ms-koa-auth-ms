@@ -5,6 +5,9 @@ const cors = require('@koa/cors')(/* Add your cors option */);
 const helmet = require('koa-helmet')(/* Add your security option */);
 const logger = require('koa-logger')();
 
+const session = require('koa-session');
+const passport = require('koa-passport');
+
 const errorHandler = require('./middleware/error.middleware');
 const applyApiMiddleware = require('./api');
 const { isDevelopment } = require('./config');
@@ -19,6 +22,9 @@ if (isDevelopment) {
   app.use(logger);
 }
 
+app.keys = ['S3cR3tK3y($&*^%$#@!'];
+require('./auth');
+
 /**
  * Pass to our server instance middlewares
  */
@@ -27,7 +33,10 @@ app
   .use(helmet)
   .use(compress)
   .use(cors)
-  .use(bodyParser);
+  .use(bodyParser)
+  .use(session(app))
+  .use(passport.initialize())
+  .use(passport.session());
 
 /**
  * Apply to our server the api router

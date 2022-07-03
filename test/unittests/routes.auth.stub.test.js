@@ -3,12 +3,13 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
+const passport = require('koa-passport');
 const sinon = require('sinon');
 const queries = require('../../db/queries/users');
 
 const server = require('../../index');
 
-const data = [
+const userdata = [
   {
     id: 3,
     name: 'vamshree admin',
@@ -31,144 +32,67 @@ const data = [
   },
 ];
 
-describe('routes : auth - stubbed', () => {
-  describe('GET /users', () => {
-    beforeEach(() => {
-      sinon.stub(queries, 'getAllUsers').resolves(data);
-    });
+const regData = [
+  {
+    name: 'vamshree admin',
+    email: 'vamshree@bluesquaretech.com.au',
+    password: '$2a$10$iO8lJ4x3ITk9lwmn8Db1wuu7jOjXhKUkJAeNmNibGMlucKMTC9pfC',
+    position: 'Admin',
+    is_admin: true,
+  },
+  {
+    name: 'vamshree siramdasu',
+    email: 'vamshree@outlook.com',
+    password: '$2a$10$iO8lJ4x3ITk9lwmn8Db1wuu7jOjXhKUkJAeNmNibGMlucKMTC9pfC',
+    position: 'Vice-President',
+  },
+];
 
-    afterEach(() => {
-      queries.getAllUsers.restore();
-    });
-
-    it('should return json with all users', done => {
-      chai
-        .request(server)
-        .get('/api/v1/users')
-        .end((err, res) => {
-          should.not.exist(err);
-          res.status.should.eql(200);
-          res.type.should.eql('application/json');
-          res.body.status.should.eql('success');
-          res.body.data.length.should.eql(2);
-          res.body.data[0].should.include.keys(
-            'id',
-            'name',
-            'email',
-            'password',
-            'position',
-            'is_admin',
-            'created_at',
-            'updated_at',
-          );
-          done();
-        });
-    });
+describe('routes : auth with stub', () => {
+  beforeEach(() => {
+    this.authenticate = sinon.stub(passport, 'authenticate').returns(() => {});
+    this.register = sinon.stub(queries, 'createOne').returns(() => {});
   });
 
-  describe('GET /users/:userId', () => {
-    beforeEach(() => {
-      sinon.stub(queries, 'getOneUser').resolves(data[0]);
-    });
-
-    afterEach(() => {
-      queries.getOneUser.restore();
-    });
-
-    it('should return json with 1 user', done => {
-      chai
-        .request(server)
-        .get('/api/v1/users/3')
-        .end((err, res) => {
-          should.not.exist(err);
-          res.status.should.eql(200);
-          res.type.should.eql('application/json');
-          res.body.status.should.eql('success');
-          res.body.data.should.include.keys(
-            'id',
-            'name',
-            'email',
-            'password',
-            'position',
-            'is_admin',
-            'created_at',
-            'updated_at',
-          );
-          done();
-        });
-    }).timeout(5000);
+  afterEach(() => {
+    this.authenticate.restore();
+    this.register.restore();
   });
 
-  describe('POST /users', () => {
-    beforeEach(() => {
-      sinon.stub(queries, 'createOne').resolves(data[0]);
-    });
-
-    afterEach(() => {
-      queries.createOne.restore();
-    });
-
-    it('should return json with 1 user', done => {
+  describe('POST /api/auth/register', () => {
+    it('should register the user', done => {
+      this.register.returns(Promise.resolve(userdata[0]));
       chai
         .request(server)
-        .post('/api/v1/users')
-        .send({
-          name: 'vamshree siramdasu',
-          email: 'vamshree@outlook.com',
-          password: 'siramdasu',
-          position: 'Vice-President',
-        })
+        .post('/api/v1/auth/register')
+        .send(regData[0])
         .end((err, res) => {
           should.not.exist(err);
           res.status.should.eql(201);
           res.type.should.eql('application/json');
           res.body.status.should.eql('success');
-          res.body.data.should.include.keys(
-            'id',
-            'name',
-            'email',
-            'password',
-            'position',
-            'is_admin',
-            'created_at',
-            'updated_at',
-          );
           done();
         });
     });
   });
 
-  describe('PUT /users/:userId', () => {
+  describe('routes : POST /auth/login - stub', () => {
     beforeEach(() => {
-      sinon.stub(queries, 'updateOne').resolves(data[0]);
+      this.authenticate.yields(null, { id: 1 });
     });
 
-    afterEach(() => {
-      queries.updateOne.restore();
-    });
-
-    it('should return json with updated user', done => {
+    it('should login a user', done => {
       chai
         .request(server)
-        .put('/api/v1/users/3')
-        .send(data[0])
+        .post('/api/v1/auth/login')
+        .send({ email: userdata[0].email, password: 'siramdasu' })
         .end((err, res) => {
           should.not.exist(err);
           res.status.should.eql(200);
           res.type.should.eql('application/json');
           res.body.status.should.eql('success');
-          res.body.data.should.include.keys(
-            'id',
-            'name',
-            'email',
-            'password',
-            'position',
-            'is_admin',
-            'created_at',
-            'updated_at',
-          );
           done();
         });
-    }).timeout(5000);
+    });
   });
 });
