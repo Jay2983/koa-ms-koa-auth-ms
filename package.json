@@ -41,7 +41,10 @@
     "koa-compress": "3.0.0",
     "koa-helmet": "4.1.0",
     "koa-logger": "3.2.0",
+    "koa-passport": "^4.1.4",
     "koa-router": "7.4.0",
+    "koa-session": "^6.2.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.7.3",
     "uuid": "3.3.2"
   }

@@ -29,10 +29,17 @@ function updateOne(userId, user) {
     .returning('*');
 }
 
+function getOneUserByEmail(email) {
+  return knex('users')
+    .select('*')
+    .where('email', email);
+}
+
 module.exports = {
   getAllUsers,
   getOneUser,
   createOne,
   getFirstUserId,
   updateOne,
+  getOneUserByEmail,
 };
